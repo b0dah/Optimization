@@ -31,7 +31,7 @@ func generateFibGreaterThanX(X: Double){
 ///////////////////////// Fibonacci ////////////////////////////////////////////
 
 ///*I*/
-let Eps = 1e-6, Δ = 1e-12, Accuracy = 1e-12
+let Eps = 1e-8, Δ = 1e-12, Accuracy = 1e-12
 var a = -3.0, b = 7.0
 
 
@@ -78,7 +78,8 @@ print("Fibonacci answer is    \( (a + b)/2 )          \(k) iterations done")
 
 /////////////////////// GOLDEN RATIO ///////////////////////////
 
-a = -3.0; b = 7.0
+a = -3.0
+b = 7.0
 
 let φ = (3 - sqrt(5)) / 2
     λ = a + φ*(b-a)
@@ -91,7 +92,7 @@ repeat {
     
     if f(x: λ) < f(x: μ){
         b = μ
-        if k%10 == 0 { /// поправка
+        if k%4 == 0 { /// поправка
             λ = a + φ*(b-a)
             μ = a + b - λ
         }
