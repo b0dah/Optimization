@@ -118,3 +118,4 @@ while fabs(a-b) >= 2*Eps
 
 print("GOLDEN RATIO answer is \( (a + b)/2 )        \(k) iterations done")
 print("\n")
+

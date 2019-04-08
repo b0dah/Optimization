@@ -9,22 +9,15 @@
 import Foundation
 
 class GradientDescent  {
-    let Eps1 = 1e-3, Eps2 = 1e-3, iterationLimit = 1e3
+    let Eps1 = 1e-8, Eps2 = 1e-8, iterationLimit: Int = 10000
     
-    struct p {
-        var x: Double
-        var y: Double
-    }
+    var x: [Double]//, Answer: [Double]
     
-    var x: Double
-    
-    init(initialApproximation: Double) {
-        x = initialApproximation
-    }
     
 /*+*/func f(arg: [Double]) -> Double {
         let x = arg[0], y = arg[1]
-        return x*x + y*y
+        //return x*x + y*y
+        return 5*x*x + y*y - x*y + x
     }
     
     
@@ -38,7 +31,7 @@ class GradientDescent  {
         return [component1, component2]
     }
     
-    func norm(vector: [Double]) -> Double {
+    func v_norm(vector: [Double]) -> Double {
         var summ = 0.0
         for i in vector {
             summ += i*i
@@ -46,7 +39,7 @@ class GradientDescent  {
         return sqrt(summ)
     }
     
-/*!*/func MinCoordinate(x0: Double, f: (Double)->Double ) -> Double { // Golden Ratio
+/*!*/func MinCoordinate( function: (Double)->Double ) -> Double { // Golden Ratio
         let φ = (3 - sqrt(5)) / 2
         
         var a = 0.0, b = 1.0,
@@ -59,7 +52,7 @@ class GradientDescent  {
         repeat {
             k+=1
             
-            if f( λ) < f( μ){
+            if function( λ) < function( μ){
                 b = μ
                 if k%4 == 0 { /// поправка
                     λ = a + φ*(b-a)
@@ -95,5 +88,62 @@ class GradientDescent  {
         }
         return result
     }
+    
+    func v_Substraction(vector1: [Double], vector2: [Double]) -> [Double] {
+        var result = [Double]()
+        for i in vector1.indices {
+            result.append(vector1[i] - vector2[i])
+        }
+        return result
+    }
+    
+    
+    
+    
+    
+    init(initialApproximation: [Double]) {
+        x = initialApproximation
+        var x_next = x
+        var k = 0, min_α: Double,
+        predTimeMet = false
+        
+        
+        
+        while v_norm(vector : grad(arg: x)) > Eps1 && (k < iterationLimit) {
+            
+            func g(α: Double)->Double{
+                var result = [Double]()
+                result.append( x[0] - α*(grad(arg: x)[0]) )
+                result.append( x[1] - α*(grad(arg: x)[1]) )
+                    
+                    
+                
+                return f(arg: result)
+            }
+            
+            min_α = MinCoordinate(function: g(α:))
+            
+            for i in x.indices {
+                x_next[i] = x[i] - min_α * (grad(arg: x)[i])
+            }
+            
+            if v_norm(vector: v_Substraction(vector1: x_next, vector2: x)) < Eps2
+                && fabs(f(arg: x_next) - f(arg: x)) < Eps2 {
+                if predTimeMet || k < 1
+                    {break}
+                else {
+                    predTimeMet = true
+                }
+            }
+            
+            x = x_next
+            k+=1
+        }
+        
+        print(" The answer is \(x)")
+        print("k = \(k)")
+    }
 }
+
+let gradIntance = GradientDescent(initialApproximation: [1.5,1])
 
