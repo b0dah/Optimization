@@ -11,8 +11,7 @@ import Foundation
 class GradientDescent  {
     let Eps1 = 1e-8, Eps2 = 1e-8, iterationLimit: Int = 10000
     
-    var x: [Double]//, Answer: [Double]
-    
+    //var x: [Double]
     
 /*+*/func f(arg: [Double]) -> Double {
         let x = arg[0], y = arg[1]
@@ -97,32 +96,27 @@ class GradientDescent  {
         return result
     }
     
-    
-    
-    
-    
-    init(initialApproximation: [Double]) {
-        x = initialApproximation
-        var x_next = x
-        var k = 0, min_α: Double,
+    func solve(x0: [Double] ) {
+        var x=x0, x_next = x0,
+        k = 0, min_α: Double,
         predTimeMet = false
         
         
         
         while v_norm(vector : grad(arg: x)) > Eps1 && (k < iterationLimit) {
-          ///////////////////////////////////////////////////
+            ///////////////////////////////////////////////////
             func g(α: Double)->Double{
                 var result = [Double]()
                 result.append( x[0] - α*(grad(arg: x)[0]) )
                 result.append( x[1] - α*(grad(arg: x)[1]) )
-                    
-                    
+                
+                
                 
                 return f(arg: result)
             }
             
             min_α = MinCoordinate(function: g(α:))
-          ///////////////////////////////////////////
+            ///////////////////////////////////////////
             
             
             for i in x.indices {
@@ -132,7 +126,7 @@ class GradientDescent  {
             if v_norm(vector: v_Substraction(vector1: x_next, vector2: x)) < Eps2
                 && fabs(f(arg: x_next) - f(arg: x)) < Eps2 {
                 if predTimeMet || k < 1
-                    {break}
+                {break}
                 else {
                     predTimeMet = true
                 }
@@ -142,19 +136,81 @@ class GradientDescent  {
             k+=1
         }
         
-        print("  min  -  \(x)")
+        print("  min  ->  \(x))")
         print("k = \(k)")
         print()
+    }
+    
+    
+    init(initialApproximation: [Double]) {
+        //print("      || Gradient descent: ||")
+        solve(x0: initialApproximation)
     }
 }
 
 class FletcherRivesMethod: GradientDescent {
     
+    override func solve(x0: [Double]) {
+        var x=x0, x_next = x0, x_pred = x0,
+            k = 0, min_α: Double,
+            predTimeMet = false,
+            S: [Double],  B: Double;
+        
+        // Init S
+            S = [ -(grad(arg: x)[0]), -(grad(arg: x)[1]) ]
+            
+        while v_norm(vector : grad(arg: x)) > Eps1 && (k < iterationLimit) {
+            
+            //recomputing S
+            if k>0 {
+                B = (v_norm(vector: grad(arg: x)) * v_norm(vector: grad(arg: x)) ) / Double( (v_norm(vector: grad(arg: x_pred)) * v_norm(vector: grad(arg: x_pred)) ) )
+                /*S*/
+                for i in x.indices {
+                    S[i] = -grad(arg: x)[i] + B * S[i]
+                }
+            }
+            ////////////////////////////////////////////////////
+            
+            // minimization g
+            func g(α: Double)->Double{
+                var result = [Double]()
+                result.append( x[0] + α*S[0] )
+                result.append( x[1] + α*S[1] )
+                
+                return f(arg: result)
+            }
+            
+            min_α = MinCoordinate(function: g(α:))
+            
+            // x_next
+            for i in x.indices {
+                x_next[i] = x[i] + min_α * S[i]
+            }
+            
+            // Exiting condition
+            if v_norm(vector: v_Substraction(vector1: x_next, vector2: x)) < Eps2
+                && fabs(f(arg: x_next) - f(arg: x)) < Eps2 {
+                if predTimeMet || k < 1
+                {break}
+                else {
+                    predTimeMet = true
+                }
+            }
+            
+            x_pred = x
+            x = x_next
+            k+=1
+        }
+            
+            print("  min  ->  \(x))")
+            print("k = \(k)")
+            print()
+    }
 }
 
-print( "The answer of Gradient descent is: " )
-let gradIntance = GradientDescent(initialApproximation: [1.5,1])
+print("      || Gradient descent: ||")
+let gradInstance = GradientDescent(initialApproximation: [1.5,1])
 
-print( "The answer of Fletcher-Rives Method is: " )
+print("      || Flethcer-Rives Method: ||")
 let FR = FletcherRivesMethod(initialApproximation: [1.5,1])
 
