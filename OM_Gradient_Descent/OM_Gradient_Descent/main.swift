@@ -110,7 +110,7 @@ class GradientDescent  {
         
         
         while v_norm(vector : grad(arg: x)) > Eps1 && (k < iterationLimit) {
-            
+          ///////////////////////////////////////////////////
             func g(α: Double)->Double{
                 var result = [Double]()
                 result.append( x[0] - α*(grad(arg: x)[0]) )
@@ -122,6 +122,8 @@ class GradientDescent  {
             }
             
             min_α = MinCoordinate(function: g(α:))
+          ///////////////////////////////////////////
+            
             
             for i in x.indices {
                 x_next[i] = x[i] - min_α * (grad(arg: x)[i])
@@ -140,10 +142,19 @@ class GradientDescent  {
             k+=1
         }
         
-        print(" The answer is \(x)")
+        print("  min  -  \(x)")
         print("k = \(k)")
+        print()
     }
 }
 
+class FletcherRivesMethod: GradientDescent {
+    
+}
+
+print( "The answer of Gradient descent is: " )
 let gradIntance = GradientDescent(initialApproximation: [1.5,1])
+
+print( "The answer of Fletcher-Rives Method is: " )
+let FR = FletcherRivesMethod(initialApproximation: [1.5,1])
 
