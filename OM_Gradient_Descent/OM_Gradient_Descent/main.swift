@@ -9,7 +9,7 @@
 import Foundation
 
 class GradientDescent  {
-    let Eps1 = 1e-7, Eps2 = 1e-7, iterationLimit: Int = 1000
+    let Eps1 = 1e-2, Eps2 = 1e-2, iterationLimit: Int = 1000
     
     //var x: [Double]
     
@@ -243,7 +243,7 @@ class FletcherRivesMethod: GradientDescent {
     }
 }
 
-class Newton: FletcherRivesMethod {
+class NewtonMethod: FletcherRivesMethod {
     
     func matrix_x_vector(a: [[Double]], x: [Double])->[Double] {
         var res : [Double] = Array (repeating: 0, count: x.count)
@@ -257,8 +257,8 @@ class Newton: FletcherRivesMethod {
     }
     
     func DoubleDerivativeMatrix(/*function: [Double]->[Double], grad: [Double]*/) -> [[Double]] {
-        return [[10, -1],
-                [2, -1]]
+        return [[10.0, -1.0],
+                [-1.0, 2.0]]
     }
     
     func inversedMatrix(a: [[Double]]) -> [[Double]] {
@@ -284,38 +284,20 @@ class Newton: FletcherRivesMethod {
             // Init S
             S = [ -(grad(arg: x)[0]), -(grad(arg: x)[1]) ]
         
-        let antiGrad = S;
+        let antiGradient = S;
 
             
             while v_norm(vector : grad(arg: x)) > Eps1 && (k < iterationLimit) {
                 print("norm =", v_norm(vector : grad(arg: x)))
                 //recomputing S
-                if k>0 {
-                    /*S*/
-                    
-                    S = matrix_x_vector(a: inversedMatrix(a: DoubleDerivativeMatrix()), x: <#T##[Double]#>)
-                    //for i in x.indices {
-                    //    S[i] = -grad(arg: x)[i] + B * S[i]
-                    //}
-                }
+                    S = matrix_x_vector(a: inversedMatrix(a: DoubleDerivativeMatrix()), x: antiGradient )
                 ////////////////////////////////////////////////////
                 
-                // minimization g
-                func g(α: Double)->Double{
-                    //var result = [Double]()
-                    //result.append( x[0] + α*S[0] )
-                    //result.append( x[1] + α*S[1] )
-                    var result : [Double] = [ x[0] + α*S[0], x[1] + α*S[1] ]
-                    
-                    return f(arg: result)
-                }
                 
-                //min_α = MinCoordinate(function: g(α:))
-                min_α = 1.0;
                 
                 // x_next
                 for i in x.indices {
-                    x_next[i] = x[i] + min_α * S[i]
+                    x_next[i] = x[i] + S[i]
                 }
                 
                 // Exiting condition
@@ -347,9 +329,63 @@ class Newton: FletcherRivesMethod {
     
 }
 
-class NewtonRaphson: Newton {
+class NewtonRaphsonMethod: NewtonMethod {
     override func solve(x0: [Double]) {
+        var x=x0, x_next = x0, x_pred = x0,
+        k = 0, min_α: Double,
+        predTimeMet = false,
+        S: [Double],  B: Double;
         
+        // Init S
+        S = [ -(grad(arg: x)[0]), -(grad(arg: x)[1]) ]
+        
+        let antiGradient = S;
+        
+        while v_norm(vector : grad(arg: x)) > Eps1 && (k < iterationLimit) {
+            print("norm =", v_norm(vector : grad(arg: x)))
+            //recomputing S
+            S = matrix_x_vector(a: inversedMatrix(a: DoubleDerivativeMatrix()), x: antiGradient )
+            
+            // minimization g
+            func g(α: Double)->Double{
+                var result : [Double] = [ x[0] + α*S[0], x[1] + α*S[1] ]
+                
+                return f(arg: result)
+            }
+            
+            min_α = MinCoordinate(function: g(α:))
+            print("         min_α = ", min_α)
+            
+            // x_next
+            for i in x.indices {
+                x_next[i] = x[i] + min_α * S[i]
+            }
+            
+            // Exiting condition
+            if v_norm(vector: v_Substraction(vector1: x_next, vector2: x)) < Eps2 && fabs(f(arg: x_next) - f(arg: x)) < Eps2 {
+                if predTimeMet || k < 1
+                {
+                    print(" !!!! pred time !!!!")
+                    break
+                }
+                else {
+                    predTimeMet = true
+                }
+            }
+            else {
+                predTimeMet = false
+            }
+            
+            x_pred = x
+            x = x_next
+            k+=1
+            
+            print()
+        }
+        
+        print("  min  ->  \(x)")
+        print("k = \(k)")
+        print()
     }
 }
 
@@ -358,4 +394,12 @@ let gradInstance = GradientDescent(initialApproximation: [0.1,-0.1])
 
 print("      || Flethcer-Rives Method: ||")
 let FR = FletcherRivesMethod(initialApproximation: [1.5,1.0])
+
+print("      || Newton Method: ||")
+let N = NewtonMethod(initialApproximation: [1.5,1.0])
+
+print("      || Newton-Raphson Method: ||")
+let NR = NewtonRaphsonMethod (initialApproximation: [1.5,1.0])
+
+
 
