@@ -116,7 +116,7 @@ class GradientDescent  {
                 return f(arg: result)
             }
             
-            min_α = MinCoordinate(function: g(α:))
+            min_α = MinCoordinate(function: g(α:) )
             ///////////////////////////////////////////
             
             
