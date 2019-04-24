@@ -56,6 +56,71 @@ class Substitution {
     
 }
 
+class FineMethod{
+    
+    let Eps = 1e-8
+    
+    
+    func dichotomy(function: (Double)->Double) -> Double  {
+        let eps = Eps
+        let delta = eps
+        
+        var a = -10.0, b = 10.0, c: Double = 0.0;
+        
+        while fabs(b - a) > eps {
+            c = (a + b) / Double(2);
+            
+            if function( c-delta) < function( c+delta) {
+                b = c;
+            }
+            else {
+                a = c;
+            }
+        }
+        //print(" min = " , (a + b) / Double(2) )
+        return (a + b) / 2
+    }
+    
+    func Xtakenout( function: ( Double, Double)->Double, y: Double ) -> Double { // returns X
+        let x_coefficient : Double = function(1.0,0.0) - function(0.0,0.0)
+        return Double(-1 * function(0, y)) / Double(x_coefficient)
+    }
+    
+    init(/* -> Funcs */   sourceFunction: @escaping (Double, Double)->Double, condFunction: @escaping  (Double, Double)->Double) {
+    
+        
+        func p(y: Double)-> Double { // p(y)
+            return ( Xtakenout(function: condFunction, y: y) > 0 ) ? Xtakenout(function: condFunction, y: y) : 0.0
+        }
+        
+        var r = 1.0
+        var x=1.0, y=1.0, k=0
+
+        while (p(y: y)) > Eps {
+            
+            func compositeFun(x: Double) -> Double {
+                return sourceFunction(x, y) + p(y: y) * (r/2)
+            }
+            
+            dichotomy(function: compositeFun(x: <#T##Double#>, y: <#T##Double#>))
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            r*=5
+            k+=1
+            
+        }
+    }
+    
+}
 /////// SOLving //////////////////////////////////////////////
 
 // a) ****

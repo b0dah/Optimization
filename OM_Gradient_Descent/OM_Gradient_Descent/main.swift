@@ -9,14 +9,15 @@
 import Foundation
 
 class GradientDescent  {
-    let Eps1 = 1e-2, Eps2 = 1e-2, iterationLimit: Int = 1000
+    let Eps1 = 1e-8, Eps2 = 1e-8, iterationLimit: Int = 1000
     
     //var x: [Double]
     
 /*+*/func f(arg: [Double]) -> Double {
         let x = arg[0], y = arg[1]
         //return x*x + y*y
-        return 5*x*x + y*y - x*y + x
+        //return 5*x*x + y*y - x*y + x
+        return x*x + 5*y*y - x*y + x
     }
     
     

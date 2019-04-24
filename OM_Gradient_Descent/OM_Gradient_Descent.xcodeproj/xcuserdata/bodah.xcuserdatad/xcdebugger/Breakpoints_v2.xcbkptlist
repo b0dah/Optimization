@@ -10,7 +10,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "OM_Gradient_Descent/main.swift"
-            timestampString = "577113966.466759"
+            timestampString = "577724547.246748"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "10"
@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "OM_Gradient_Descent/main.swift"
-            timestampString = "577113966.467105"
+            timestampString = "577724547.247105"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "178"
-            endingLineNumber = "178"
+            startingLineNumber = "179"
+            endingLineNumber = "179"
             landmarkName = "unknown"
             landmarkType = "0">
          </BreakpointContent>
