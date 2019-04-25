@@ -10,13 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ctest/main.cpp"
-            timestampString = "577809433.325456"
+            timestampString = "577914126.761398"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "20"
-            endingLineNumber = "20"
-            landmarkName = "unknown"
-            landmarkType = "0">
+            startingLineNumber = "298"
+            endingLineNumber = "298">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

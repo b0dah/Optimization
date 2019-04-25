@@ -56,7 +56,7 @@ class Substitution {
     
 }
 
-class FineMethod{
+/*class FineMethod{
     
     let Eps = 1e-8
     
@@ -120,7 +120,7 @@ class FineMethod{
         }
     }
     
-}
+}*/
 /////// SOLving //////////////////////////////////////////////
 
 // a) ****

@@ -1,113 +1,70 @@
-//
-//  main.cpp
-//  ctest
-//
-//  Created by Иван Романов on 07/04/2019.
-//  Copyright © 2019 Иван Романов. All rights reserved.
-//
-
-/*#include <iostream>
-
-double f(double x) {
-    return x;
-}
-
-const double h = 1e-1;
-double x = 1.0;
-
-int main(int argc, const char * argv[]) {
-    // insert code here...
-    std::cout << (f(x+h) - f(x-h))/(double)(2.0*h) << std::endl; // divided by INT
-    std::cout << 2.0*h;
-    return 0;
-} */
-
-/*#include <iostream>
-#include <string>
-#include "math.h"
-#include <vector>
-
-using namespace std;
-
-const int N = 2;
-
-vector<vector<double>> matrix = {{-1, 1/3},
-                                 {1/2, -1}};
-vector<double> init_approx = {-1,-1};
-vector<double> right_col = {1,1};
-
-vector<double> iteration(vector<vector<double>> a, vector<double> x, vector<double> b)
-{
-    int i,j;
-    const double eps = 1e-4;
-    
-    double norma; //чебышевская норма вектора
-    vector<double> xn={1,1};//вектор для текущей итерации, начальное значение
-    //должно быть равно начальному приближению
-    
-    int k = 0;
-    
-    do{
-        norma=0.0;
-        for(i=0;i < N;i++)
-        {
-            xn[i]=-b[i];
-            
-            for(j=0;j < N;j++)
-            {
-                if(i!=j)
-                    xn[i]+=a[i][j]*x[j];
-            }
-            
-            xn[i]/=-a[i][i];
-        }
-        
-        for(i=0;i < N;i++)
-        {
-            if(fabs(x[i]-xn[i]) > norma)
-                norma=fabs(x[i]-xn[i]); //Вычисление нормы вектора
-            x[i]=xn[i];
-        }
-        k++;
-    }
-    while(norma > eps); //проверка на необходимую точность вычислений
-    
-    cout << "k=" << k<< endl;
-    return x;
-}
-
-int main(){
-    
-
-    vector<double> a = iteration(matrix, init_approx, right_col);
-    
-    for (auto &iter: a ){
-        cout << iter<< endl;
-        
-    }
-    return 0;
-}*/
-
 #include <iostream>
 #include <vector>
 #include "math.h"
 
-#define FILE_INPUT_PATCH "input.txt"
-#define FILE_OUTPUT_PATCH "output.txt"
+
 #define EPS 1e-12
 using namespace std;
 
+vector<double> GaussMethod(vector<vector<double>> a, vector<double> b ) {
 
-int main()
-{
-  
-    vector < vector < double > > a = {{1,-1}, {-2,1}};
-    vector < double > b = {1,1}, x= {1,1};  //Вектора x,b
-    int n = 2;                       //Размерность
+    vector < double > x = {1,1};
+    int n = b.size();                     //Размерность
+
+//Прямой ход метода Гауса
+    for ( int k = 0; k < n - 1; k++ )
+        for (int i = k + 1; i < n; i++) {
+   
+            double div;
+            if (abs(a[k][k]) > EPS)
+                div = (double) a[i][k] / a[k][k];
+            else {
+                cout << "System linear depended";
+            }
+            
+            b[i] -= div * b[k];
+            for (int j = k; j < n; j++)
+            a[i][j] -= div * a[k][j];
+            }
+            //Проверка на вырожденность
+            for( int i = 0; i < n; i++)
+            if (a[i][i] == 0) {
+                cout << "|A|=0 ";
+                //return 1;
+            }
+            
+            //Обратный ход метода Гауса
+            x[n - 1] = (double) b[n - 1] / a[n - 1][n - 1];   // Вычисляем x[n]
+            for (int i = n - 2; i >= 0; i--) {
+                int sum = b[i];                    //Сумма переноса вправо для очередной строки
+                for (int j = i + 1; j < n; j++)
+                    sum -= a[i][j] * x[j];
+                
+                if ( abs ( a[i][i] ) > EPS )
+                    x[i] = (double)sum / a[i][i];
+                else {
+                    cout << "Method not work ";
+                    //return 1;
+                }
+                
+                
+                
+            }
+            
+            //for ( int i = 0; i < n; i++)
+            //cout << "x[" << i << "]= " << x[i] << '\n' ;
+    
+    return x;
+}
+
+vector<double> LU_decomposition(vector<vector<double>> a, vector <double> b, vector <double> x /*init*/){
+    
+    const int n = a.size();
+    
     vector < vector < double > > L; //  Нижнетреугольная матрица с единич диагональю
     vector < vector < double > > U; //Верхнетреугольная матрица
     
-
+    
     //Инициализация
     L.resize(n);
     U.resize(n);
@@ -135,7 +92,7 @@ int main()
                 L[j][i] /= U[i][i];
             else {
                 cout << "Error";
-                return 1;
+                //return 1;
             }
         }
         
@@ -160,14 +117,91 @@ int main()
             x[i] /= U[i][i];
         else {
             cout << "error" << '\n';
-            return 1;
+            //return 1;
         }
     }
     
-    for (auto &iter: x) {
-        cout << iter<< endl;
+    //for (auto &iter: x) {
+    //    cout << iter<< endl;
+    //}
+  
+    return x;
+}
+
+vector<vector<double>> scalar_x_matrix(double scalar, vector<vector<double>> a){
+    for (int i=0; i<a.size(); i++)
+        for (int j=0; j<a.size(); j++)
+            a[i][j]*=scalar;
+        
+    return a;
+}
+
+vector<double> scalar_x_vector(double scalar, vector<double> v){
+    for (int i=0; i<v.size(); i++)
+            v[i]*=scalar;
+    return v;
+}
+
+vector<vector<double>> matrixAddition(vector<vector<double>> a, vector<vector<double>> b){
+    for (int i=0; i<a.size(); i++)
+        for (int j=0; j<a.size(); j++)
+            a[i][j]+=b[i][j];
+    
+    return a;
+}
+
+vector<double> vectorAddition(vector<double> v1, vector <double> v2){
+    for (int i=0; i<v1.size(); i++) {
+        v1[i]+=v2[i];
     }
+    return v1;
+}
+
+double funcP( double x, double y, double r ) {
+    return r/2*pow(x+y-1, 2);
+}
+
+void outputVector(vector<double> v){
+    for (auto &iter: v) {
+        cout << iter<< "  ";
+    }
+    cout << endl;
+}
+
+
+int main()
+{
+  
+    vector < vector < double > > a = {{10,-1}, {-1,2}};
+    vector < double > b = {0,0}, x= {1,1};  //Вектора x,b
+    
+    vector <vector<double>> phi = {{1,1}, {1,1}};
+    vector<double> phi_right = {1,1};
+    
+    int n = 2;                       //Размерность
+    int k = 0;
+    double r = 1.0;
+    const double eps = 1e-8;
+    
+    do {
+        x = LU_decomposition(matrixAddition(a, scalar_x_matrix(r, phi)), vectorAddition(b, scalar_x_vector(r, phi_right)), x);
+        //x = GaussMethod(matrixAddition(a, scalar_x_matrix(r, phi)), vectorAddition(b, scalar_x_vector(r, phi_right)));
+        outputVector(x);
+        r*=10;
+        k++;
+    } while (funcP(x[0], x[1], r) > eps);
     
     
+    cout << " k = "<<k<<endl;
     
+    /*vector<double> v = LU_decomposition({{11,0},{0,3}}, {1,1}, {1,1});
+    outputVector(v);
+    cout << endl;*/
+    
+    /*auto m = matrixAddition( {{10,-1}, {-1,2}}, scalar_x_matrix(1, {{1,1}, {1,1}}));
+    for (int i=0; i<a.size(); i++){
+        cout << endl;
+        for (int j=0; j<a.size(); j++)
+            cout << m[i][j] << "  ";
+    }*/
 }
