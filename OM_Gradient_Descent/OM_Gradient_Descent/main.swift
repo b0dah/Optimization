@@ -16,13 +16,13 @@ class GradientDescent  {
 /*+*/func f(arg: [Double]) -> Double {
         let x = arg[0], y = arg[1]
         //return x*x + y*y
-        //return 5*x*x + y*y - x*y + x
-        return x*x + 5*y*y - x*y + x
+        return 5*x*x + y*y - x*y + x
+        //return x*x + 5*y*y - x*y + x
     }
     
     
     func grad(arg: [Double]) -> [Double] {
-        let h = Eps1,
+        let h = 1e-3,
         x = arg[0], y = arg[1]
         
         let component1 = (f(arg: [x+h, y]) - f(arg: [x-h, y]))/Double(2.0*h),
@@ -158,7 +158,7 @@ class FletcherRivesMethod: GradientDescent {
     override func MinCoordinate(function: (Double) -> Double) -> Double {
         
             let eps = 1e-12;
-            let delta = 1e-3
+            let delta = 1e-2
             
             var a = 0.0, b = 1.0, c: Double = 0.0;
             
